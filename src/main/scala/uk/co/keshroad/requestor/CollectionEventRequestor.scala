@@ -1,5 +1,3 @@
 package uk.co.keshroad.requestor
 
-trait CollectionEventRequestor {
-
-}
+trait CollectionEventRequestor {}

@@ -1,5 +1,3 @@
 package uk.co.keshroad.collection.serviceprovider
 
-trait ServiceProviderClient {
-
-}
+trait ServiceProviderClient {}

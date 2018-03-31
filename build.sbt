@@ -26,16 +26,16 @@ lazy val binDaySettings = Seq(
   coverageOutputXML := false,
   mainClass in (Compile, packageBin) := Some("uk.co.keshroad.Main"),
   //exclude files from jar
-  mappings in (Compile, packageBin) ~= {
-    //exclude scripts from jar
-    _.filter(!_._1.getName.endsWith(".sh"))
-    //filter conf files
-      .filter(!_._1.getName.endsWith(".conf"))
-      //filter properties files
-      .filter(!_._1.getName.endsWith(".properties"))
-  },
+  //mappings in (Compile, packageBin) ~= {
+  //exclude scripts from jar
+  //_.filter(!_._1.getName.endsWith(".sh"))
+  //filter conf files
+  //.filter(!_._1.getName.endsWith(".conf"))
+  //filter properties files
+  //.filter(!_._1.getName.endsWith(".properties"))
+  // },
   // Linter : http://www.wartremover.org/
-  wartremoverErrors ++= Warts.unsafe,
+  //wartremoverErrors ++= Warts.unsafe,
   //code formatter: http://scalameta.org/scalafmt/
   scalafmtOnCompile := true,
   scalafmtTestOnCompile := true

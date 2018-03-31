@@ -1,5 +1,3 @@
 package uk.co.keshroad.collection.schedule.uri
 
-class BinScheduleUriFinder extends ScheduleUriFinder{
-
-}
+class BinScheduleUriFinder extends ScheduleUriFinder {}

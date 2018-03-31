@@ -4,12 +4,13 @@ import com.typesafe.config.{Config, ConfigFactory}
 import uk.co.keshroad.logging.Logging
 import org.mockito.{Mockito, Matchers => MockMatchers}
 import org.mockito.Mockito.mock
+import uk.co.keshroad.collection.schedule.event.Parser
 
 import scala.io.Source
 
 class ParserSpec extends FlatSpec with GivenWhenThen with Matchers with Logging{
 
-  behavior of "A Parser"
+  behavior of "A uk.co.keshroad.collection.schedule.event.Parser"
 
   it should "parse correctly" in {
 
