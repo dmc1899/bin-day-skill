@@ -1,7 +1,7 @@
 
 import org.scalatest.{FlatSpec, GivenWhenThen, Matchers}
 import com.typesafe.config.{Config, ConfigFactory}
-import logging.Logging
+import uk.co.keshroad.logging.Logging
 import org.mockito.{Mockito, Matchers => MockMatchers}
 import org.mockito.Mockito.mock
 

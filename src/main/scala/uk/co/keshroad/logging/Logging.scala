@@ -1,4 +1,4 @@
-package logging
+package uk.co.keshroad.logging
 
 import org.slf4j.{Logger, LoggerFactory}
 

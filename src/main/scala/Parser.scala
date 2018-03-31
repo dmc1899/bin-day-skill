@@ -1,4 +1,4 @@
-import logging.Logging
+import uk.co.keshroad.logging.Logging
 
 import scala.collection.mutable.Map
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
