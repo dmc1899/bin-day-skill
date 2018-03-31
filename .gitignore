@@ -1,0 +1,16 @@
+.idea/
+.DS_Store
+
+target/
+project/target
+project/project/target
+
+
+*.pyc
+/app/.pytest_cache/
+*/__pycache__/
+
+/app/dist/
+/app/build/
+*/*.egg-info/*
+
