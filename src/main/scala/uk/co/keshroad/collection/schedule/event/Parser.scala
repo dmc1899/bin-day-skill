@@ -17,6 +17,15 @@ class Parser extends Logging {
   val nextCollectionDivId: String = "#nextCollectionSection"
   val nextCollectionDatesElementType: String = "h5"
 
+
+  def getScheduleFromUrl (url: String): String = {
+
+    val browser = JsoupBrowser()
+    val document = browser.get(url)
+    document.toString
+
+  }
+
   def parse(html: String): String = {
 
     val browser = JsoupBrowser()
