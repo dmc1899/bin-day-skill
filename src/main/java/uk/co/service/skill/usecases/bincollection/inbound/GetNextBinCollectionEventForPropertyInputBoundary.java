@@ -1,0 +1,8 @@
+package uk.co.service.skill.usecases.bincollection.inbound;
+
+import uk.co.service.skill.usecases.bincollection.outbound.GetNextBinCollectionEventForPropertyOutputBoundary;
+
+public interface GetNextBinCollectionEventForPropertyInputBoundary {
+
+    void execute(BinCollectionRequestModel binCollectionRequestModel, GetNextBinCollectionEventForPropertyOutputBoundary getNextBinCollectionEventForPropertyOutputBoundary);
+}
