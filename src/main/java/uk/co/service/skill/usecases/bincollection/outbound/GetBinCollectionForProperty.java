@@ -4,7 +4,7 @@ import uk.co.service.skill.entities.PropertyBinCollectionSchedule;
 
 public interface GetBinCollectionForProperty {
 
-    PropertyBinCollectionSchedule getBinCollectionScheduleForProperty(String endPoint);
+    PropertyBinCollectionSchedule getBinCollectionScheduleForProperty(String endPoint) throws Exception;
 
-    String getBinCollectionScheduleEndpointForProperty(String firstLineOfAddress);
+    String getBinCollectionScheduleEndpointForProperty(String firstLineOfAddress) throws Exception;
 }
