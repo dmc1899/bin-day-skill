@@ -1,6 +1,7 @@
 package uk.co.service.skill.adapters.dataprovider;
 
-import com.google.gson.*;
+import uk.co.service.skill.Logger;
+import uk.co.service.skill.MyLogger;
 import uk.co.service.skill.entities.PropertyBinCollectionSchedule;
 import uk.co.service.skill.usecases.bincollection.outbound.GetBinCollectionForProperty;
 
@@ -13,13 +14,23 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import com.google.gson.*;
+
 public class BinCollectionGateway implements GetBinCollectionForProperty {
 
     private final String encoding = "UTF-8";
     private String serviceProviderUrlBase = "https://lisburn.isl-fusion.com";
     private String serviceProviderUrlAddressPath = "/address";
     private String serviceProviderUrlCollectionPath = "/view";
+    private Logger logger;
 
+
+    public BinCollectionGateway(String serviceProviderUrlBase, String serviceProviderUrlAddressPath, String serviceProviderUrlCollectionPath, Logger logger){
+        this.serviceProviderUrlBase = serviceProviderUrlBase;
+        this.serviceProviderUrlAddressPath = serviceProviderUrlAddressPath;
+        this.serviceProviderUrlCollectionPath = serviceProviderUrlCollectionPath;
+        this.logger = logger;
+    }
 
     public String getBinCollectionScheduleEndpointForProperty(String firstLineOfAddress) throws BinCollectionGatewayException{
 
@@ -30,12 +41,14 @@ public class BinCollectionGateway implements GetBinCollectionForProperty {
             return collectionEndpoint;
         }
 
-        catch (IOException ex ){
+        catch (IOException ex){
             throw new BinCollectionGatewayException(ex.getMessage());
         }
 
+        finally {
+            logger.log("Exiting getBinCollectionScheduleEndpointForProperty");
+        }
     }
-
 
 
     private String getHtmlContainingEndpointFromAddressEndpoint(String address) throws IOException {
@@ -69,12 +82,11 @@ public class BinCollectionGateway implements GetBinCollectionForProperty {
     private String buildUrl(String baseUrl, String path, String resource) throws UnsupportedEncodingException{
         String builtUrl = null;
 
-            String encodedResource = URLEncoder.encode(resource.trim(), encoding);
-            builtUrl = new StringBuilder().append(baseUrl).append(path).append("/").append(encodedResource).toString();
+        String encodedResource = URLEncoder.encode(resource.trim(), encoding);
+        builtUrl = new StringBuilder().append(baseUrl).append(path).append("/").append(encodedResource).toString();
 
-    return builtUrl;
+        return builtUrl;
     }
-
 
 
     public PropertyBinCollectionSchedule getBinCollectionScheduleForProperty(String endPoint) {
@@ -107,15 +119,24 @@ public class BinCollectionGateway implements GetBinCollectionForProperty {
 
     public static void main (String args[]) throws IOException{
 
-        BinCollectionGateway gt = new BinCollectionGateway();
-        String htmlWithEndpoint = gt.getHtmlContainingEndpointFromAddressEndpoint(" 61 kesh road ");
-        System.out.println(htmlWithEndpoint);
+        //0. Create a Logger
+        Logger myNewLogger = new MyLogger();
 
-        String collectionEndpointPart = gt.getCollectionEndpointPartFromHtml(htmlWithEndpoint);
-        System.out.println(collectionEndpointPart);
+        //1. Gateway to website
+        GetBinCollectionForProperty gt = new BinCollectionGateway("https://lisburn.isl-fusion.com","/address","/view", myNewLogger);
 
-        String collectionEndpoint = gt.buildUrl(gt.serviceProviderUrlBase, gt.serviceProviderUrlCollectionPath, collectionEndpointPart);
-        System.out.println(collectionEndpoint);
+        try {
+            String htmlWithEndpoint = gt.getBinCollectionScheduleEndpointForProperty(" 61 kesh road ");
+            System.out.println(htmlWithEndpoint);
+        }
+        catch (BinCollectionGatewayException ex){
+            myNewLogger.log(ex.getMessage());
+        }
+//        String collectionEndpointPart = gt.getCollectionEndpointPartFromHtml(htmlWithEndpoint);
+//        System.out.println(collectionEndpointPart);
+//
+//        String collectionEndpoint = gt.buildUrl(gt.serviceProviderUrlBase, gt.serviceProviderUrlCollectionPath, collectionEndpointPart);
+//        System.out.println(collectionEndpoint);
 
     }
 }

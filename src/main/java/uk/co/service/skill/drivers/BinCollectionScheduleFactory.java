@@ -1,5 +1,7 @@
 package uk.co.service.skill.drivers;
 
+import uk.co.service.skill.Logger;
+import uk.co.service.skill.MyLogger;
 import uk.co.service.skill.adapters.dataprovider.BinCollectionGateway;
 import uk.co.service.skill.adapters.mvc.BinCollectionController;
 import uk.co.service.skill.adapters.mvc.BinCollectionSchedulePresenter;
@@ -13,8 +15,12 @@ public class BinCollectionScheduleFactory {
     public BinCollectionController createBinCollectionController() {
 
         //Wire up the system.
+
+        //0. Create a Logger
+        Logger myNewLogger = new MyLogger();
+
         //1. Gateway to website
-        GetBinCollectionForProperty myBinCollectionForProperty = new BinCollectionGateway();
+        GetBinCollectionForProperty myBinCollectionForProperty = new BinCollectionGateway("https://lisburn.isl-fusion.com","/address","/view", myNewLogger);
 
         //2 Create the use Case
         GetNextBinCollectionEventForPropertyInputBoundary useCase = new GetNextBinCollectionEventForPropertyImpl(myBinCollectionForProperty);

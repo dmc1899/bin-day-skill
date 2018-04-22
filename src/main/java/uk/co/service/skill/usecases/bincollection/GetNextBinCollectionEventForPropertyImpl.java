@@ -1,5 +1,6 @@
 package uk.co.service.skill.usecases.bincollection;
 
+import uk.co.service.skill.adapters.dataprovider.BinCollectionGatewayException;
 import uk.co.service.skill.entities.PropertyBinCollectionSchedule;
 import uk.co.service.skill.usecases.bincollection.inbound.BinCollectionRequestModel;
 import uk.co.service.skill.usecases.bincollection.inbound.GetNextBinCollectionEventForPropertyInputBoundary;
@@ -20,8 +21,17 @@ public class GetNextBinCollectionEventForPropertyImpl implements GetNextBinColle
     public void execute(BinCollectionRequestModel binCollectionRequestModel, GetNextBinCollectionEventForPropertyOutputBoundary getNextBinCollectionEventForPropertyOutputBoundary) {
         System.out.println("Executing GetNextBinCollectionEventForProperty");
 
-        String endPointForAddress = getBinCollectionForProperty.getBinCollectionScheduleEndpointForProperty(binCollectionRequestModel.firstLineOfAddress);
-        PropertyBinCollectionSchedule nextCollectionForAddress = getBinCollectionForProperty.getBinCollectionScheduleForProperty(endPointForAddress);
+        String endPointForAddress;
+        PropertyBinCollectionSchedule nextCollectionForAddress = null;
+
+        try{
+            endPointForAddress = getBinCollectionForProperty.getBinCollectionScheduleEndpointForProperty(binCollectionRequestModel.firstLineOfAddress);
+            nextCollectionForAddress = getBinCollectionForProperty.getBinCollectionScheduleForProperty(endPointForAddress);
+        }
+        catch (BinCollectionGatewayException ex)
+        {
+
+        }
 
         BinCollectionResponseModel binCollectionResponseModel = new BinCollectionResponseModel();
         binCollectionResponseModel.binCollectionEvent = nextCollectionForAddress.getTestVal().toString();
