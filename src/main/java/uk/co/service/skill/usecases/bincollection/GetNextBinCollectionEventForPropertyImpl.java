@@ -1,6 +1,7 @@
 package uk.co.service.skill.usecases.bincollection;
 
 import uk.co.service.skill.adapters.dataprovider.BinCollectionGatewayException;
+import uk.co.service.skill.adapters.dataprovider.PropertyNotFoundException;
 import uk.co.service.skill.entities.PropertyBinCollectionSchedule;
 import uk.co.service.skill.usecases.bincollection.inbound.BinCollectionRequestModel;
 import uk.co.service.skill.usecases.bincollection.inbound.GetNextBinCollectionEventForPropertyInputBoundary;
@@ -31,6 +32,8 @@ public class GetNextBinCollectionEventForPropertyImpl implements GetNextBinColle
         catch (BinCollectionGatewayException ex)
         {
 
+        } catch (PropertyNotFoundException e) {
+            e.printStackTrace();
         }
 
         BinCollectionResponseModel binCollectionResponseModel = new BinCollectionResponseModel();
