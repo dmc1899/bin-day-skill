@@ -1,9 +1,7 @@
 package uk.co.service.skill;
 
-public class MyLogger implements Logger{
+public class MyLocalLogger implements LocalLogger{
 
-
-    @Override
     public void log(String message) {
         System.out.println(message);
     }

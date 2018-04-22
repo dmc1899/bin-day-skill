@@ -1,8 +1,10 @@
 package uk.co.service.skill.adapters.dataprovider;
 
-import uk.co.service.skill.Logger;
-import uk.co.service.skill.MyLogger;
+import uk.co.service.skill.LocalLogger;
+import uk.co.service.skill.Loggable;
+import uk.co.service.skill.MyLocalLogger;
 import uk.co.service.skill.entities.PropertyBinCollectionSchedule;
+import uk.co.service.skill.usecases.bincollection.MyLoggable;
 import uk.co.service.skill.usecases.bincollection.outbound.GetBinCollectionForProperty;
 
 import java.io.IOException;
@@ -22,14 +24,16 @@ public class BinCollectionGateway implements GetBinCollectionForProperty {
     private String serviceProviderUrlBase = "https://lisburn.isl-fusion.com";
     private String serviceProviderUrlAddressPath = "/address";
     private String serviceProviderUrlCollectionPath = "/view";
-    private Logger logger;
+    private LocalLogger logger;
+    private Loggable loggable;
 
 
-    public BinCollectionGateway(String serviceProviderUrlBase, String serviceProviderUrlAddressPath, String serviceProviderUrlCollectionPath, Logger logger){
+    public BinCollectionGateway(String serviceProviderUrlBase, String serviceProviderUrlAddressPath, String serviceProviderUrlCollectionPath, LocalLogger logger, Loggable loggable){
         this.serviceProviderUrlBase = serviceProviderUrlBase;
         this.serviceProviderUrlAddressPath = serviceProviderUrlAddressPath;
         this.serviceProviderUrlCollectionPath = serviceProviderUrlCollectionPath;
         this.logger = logger;
+        this.loggable = loggable;
     }
 
     public String getBinCollectionScheduleEndpointForProperty(String firstLineOfAddress) throws BinCollectionGatewayException{
@@ -47,6 +51,7 @@ public class BinCollectionGateway implements GetBinCollectionForProperty {
 
         finally {
             logger.log("Exiting getBinCollectionScheduleEndpointForProperty");
+            loggable.logger().info("This is a debug statement from the Loggable");
         }
     }
 
@@ -120,10 +125,11 @@ public class BinCollectionGateway implements GetBinCollectionForProperty {
     public static void main (String args[]) throws IOException{
 
         //0. Create a Logger
-        Logger myNewLogger = new MyLogger();
+        LocalLogger myNewLogger = new MyLocalLogger();
+        Loggable myLoggable = new MyLoggable();
 
         //1. Gateway to website
-        GetBinCollectionForProperty gt = new BinCollectionGateway("https://lisburn.isl-fusion.com","/address","/view", myNewLogger);
+        GetBinCollectionForProperty gt = new BinCollectionGateway("https://lisburn.isl-fusion.com","/address","/view", myNewLogger, myLoggable);
 
         try {
             String htmlWithEndpoint = gt.getBinCollectionScheduleEndpointForProperty(" 61 kesh road ");
