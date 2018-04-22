@@ -1,8 +1,5 @@
 package uk.co.service.skill.drivers;
 
-import uk.co.service.skill.LocalLogger;
-import uk.co.service.skill.Loggable;
-import uk.co.service.skill.MyLocalLogger;
 import uk.co.service.skill.adapters.dataprovider.BinCollectionGateway;
 import uk.co.service.skill.adapters.mvc.BinCollectionController;
 import uk.co.service.skill.adapters.mvc.BinCollectionSchedulePresenter;
@@ -17,12 +14,8 @@ public class BinCollectionScheduleFactory {
 
         //Wire up the system.
 
-        //0. Create a Logger
-        LocalLogger myNewLogger = new MyLocalLogger();
-        Loggable myLoggable = new MyLoggable();
-
         //1. Gateway to website
-        GetBinCollectionForProperty myBinCollectionForProperty = new BinCollectionGateway("https://lisburn.isl-fusion.com","/address","/view", myNewLogger,myLoggable);
+        GetBinCollectionForProperty myBinCollectionForProperty = new BinCollectionGateway("https://lisburn.isl-fusion.com","/address","/view");
 
         //2 Create the use Case
         GetNextBinCollectionEventForPropertyInputBoundary useCase = new GetNextBinCollectionEventForPropertyImpl(myBinCollectionForProperty);

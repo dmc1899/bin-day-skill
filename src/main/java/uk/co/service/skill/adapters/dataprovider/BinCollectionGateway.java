@@ -1,10 +1,7 @@
 package uk.co.service.skill.adapters.dataprovider;
 
-import uk.co.service.skill.LocalLogger;
-import uk.co.service.skill.Loggable;
-import uk.co.service.skill.MyLocalLogger;
+import uk.co.service.skill.LoggingFacade;
 import uk.co.service.skill.entities.PropertyBinCollectionSchedule;
-import uk.co.service.skill.usecases.bincollection.MyLoggable;
 import uk.co.service.skill.usecases.bincollection.outbound.GetBinCollectionForProperty;
 
 import java.io.IOException;
@@ -18,22 +15,18 @@ import org.jsoup.nodes.Element;
 
 import com.google.gson.*;
 
-public class BinCollectionGateway implements GetBinCollectionForProperty {
+public class BinCollectionGateway implements GetBinCollectionForProperty, LoggingFacade {
 
     private final String encoding = "UTF-8";
     private String serviceProviderUrlBase = "https://lisburn.isl-fusion.com";
     private String serviceProviderUrlAddressPath = "/address";
     private String serviceProviderUrlCollectionPath = "/view";
-    private LocalLogger logger;
-    private Loggable loggable;
 
 
-    public BinCollectionGateway(String serviceProviderUrlBase, String serviceProviderUrlAddressPath, String serviceProviderUrlCollectionPath, LocalLogger logger, Loggable loggable){
+    public BinCollectionGateway(String serviceProviderUrlBase, String serviceProviderUrlAddressPath, String serviceProviderUrlCollectionPath){
         this.serviceProviderUrlBase = serviceProviderUrlBase;
         this.serviceProviderUrlAddressPath = serviceProviderUrlAddressPath;
         this.serviceProviderUrlCollectionPath = serviceProviderUrlCollectionPath;
-        this.logger = logger;
-        this.loggable = loggable;
     }
 
     public String getBinCollectionScheduleEndpointForProperty(String firstLineOfAddress) throws BinCollectionGatewayException{
@@ -50,8 +43,7 @@ public class BinCollectionGateway implements GetBinCollectionForProperty {
         }
 
         finally {
-            logger.log("Exiting getBinCollectionScheduleEndpointForProperty");
-            loggable.logger().debug("This is a debug statement from the Loggable");
+            logger().debug("This is a debug statement from the LoggingFacade");
         }
     }
 
@@ -125,19 +117,15 @@ public class BinCollectionGateway implements GetBinCollectionForProperty {
     public static void main (String args[]) throws IOException{
 
 
-        //0. Create a Logger
-        LocalLogger myNewLogger = new MyLocalLogger();
-        Loggable myLoggable = new MyLoggable();
-
         //1. Gateway to website
-        GetBinCollectionForProperty gt = new BinCollectionGateway("https://lisburn.isl-fusion.com","/address","/view", myNewLogger, myLoggable);
+        GetBinCollectionForProperty gt = new BinCollectionGateway("https://lisburn.isl-fusion.com","/address","/view");
 
         try {
             String htmlWithEndpoint = gt.getBinCollectionScheduleEndpointForProperty(" 61 kesh road ");
             System.out.println(htmlWithEndpoint);
         }
         catch (BinCollectionGatewayException ex){
-            myNewLogger.log(ex.getMessage());
+
         }
 //        String collectionEndpointPart = gt.getCollectionEndpointPartFromHtml(htmlWithEndpoint);
 //        System.out.println(collectionEndpointPart);
