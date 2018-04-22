@@ -48,7 +48,7 @@ public class BinCollectionGateway implements GetBinCollectionForProperty, Loggin
     }
 
 
-    private String getHtmlContainingEndpointFromAddressEndpoint(String address) throws IOException {
+    String getHtmlContainingEndpointFromAddressEndpoint(String address) throws IOException {
 
         String addressEndpoint = buildUrl(this.serviceProviderUrlBase, this.serviceProviderUrlAddressPath, address);
 
@@ -64,7 +64,7 @@ public class BinCollectionGateway implements GetBinCollectionForProperty, Loggin
         return htmlItem.toString();
     }
 
-    private String getCollectionEndpointPartFromHtml(String htmlWithCollectionEndpoint){
+    String getCollectionEndpointPartFromHtml(String htmlWithCollectionEndpoint){
 
         Document doc;
         doc = Jsoup.parse(htmlWithCollectionEndpoint);
@@ -76,7 +76,7 @@ public class BinCollectionGateway implements GetBinCollectionForProperty, Loggin
 
     }
 
-    private String buildUrl(String baseUrl, String path, String resource) throws UnsupportedEncodingException{
+    String buildUrl(String baseUrl, String path, String resource) throws UnsupportedEncodingException{
         String builtUrl = null;
 
         String encodedResource = URLEncoder.encode(resource.trim(), encoding);
