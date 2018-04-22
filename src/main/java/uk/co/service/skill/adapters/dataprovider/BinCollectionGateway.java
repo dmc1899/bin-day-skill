@@ -51,7 +51,7 @@ public class BinCollectionGateway implements GetBinCollectionForProperty {
 
         finally {
             logger.log("Exiting getBinCollectionScheduleEndpointForProperty");
-            loggable.logger().info("This is a debug statement from the Loggable");
+            loggable.logger().debug("This is a debug statement from the Loggable");
         }
     }
 
@@ -123,6 +123,7 @@ public class BinCollectionGateway implements GetBinCollectionForProperty {
     }
 
     public static void main (String args[]) throws IOException{
+
 
         //0. Create a Logger
         LocalLogger myNewLogger = new MyLocalLogger();
