@@ -78,10 +78,12 @@ public class BinCollectionGateway implements GetBinCollectionForProperty, Loggin
     }
 
     String getWebDocument(String addressEndpoint) throws IOException {
+        //TODO - Looks like this can be returned "java.lang.IllegalArgumentException: Must supply a valid URL" from this JSOUP command.
         return Jsoup.connect(addressEndpoint).ignoreContentType(true).execute().body();
     }
 
     String getCollectionEndpointPartFromHtml(String htmlWithCollectionEndpoint){
+
 
         Document doc;
         doc = Jsoup.parse(htmlWithCollectionEndpoint);
