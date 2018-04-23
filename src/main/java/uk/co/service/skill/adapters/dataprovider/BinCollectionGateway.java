@@ -1,5 +1,6 @@
 package uk.co.service.skill.adapters.dataprovider;
 
+import org.jsoup.HttpStatusException;
 import uk.co.service.skill.LoggingFacade;
 import uk.co.service.skill.entities.PropertyBinCollectionSchedule;
 import uk.co.service.skill.usecases.bincollection.outbound.GetBinCollectionForProperty;
@@ -20,12 +21,11 @@ import org.apache.commons.lang3.*;
 
 public class BinCollectionGateway implements GetBinCollectionForProperty, LoggingFacade {
 
-    private String addressNotFoundResponseText = "No results found for the search text provided";
     private final String encoding = "UTF-8";
+    private String addressNotFoundResponseText = "No results found for the search text provided";
     private String serviceProviderUrlBase = "https://lisburn.isl-fusion.com";
     private String serviceProviderUrlAddressPath = "/address";
     private String serviceProviderUrlCollectionPath = "/view";
-
 
     public BinCollectionGateway(){};
 
@@ -38,6 +38,8 @@ public class BinCollectionGateway implements GetBinCollectionForProperty, Loggin
 
     public String getBinCollectionScheduleEndpointForProperty(String firstLineOfAddress) throws BinCollectionGatewayException, PropertyNotFoundException{
 
+        logger().debug("Entering getBinCollectionScheduleEndpointForProperty");
+
         try {
             String htmlWithEndpoint = getHtmlEncodedCollectionPathForAddress(firstLineOfAddress);
             String collectionEndpointPart = getCollectionEndpointPartFromHtml(htmlWithEndpoint);
@@ -45,15 +47,12 @@ public class BinCollectionGateway implements GetBinCollectionForProperty, Loggin
             return collectionEndpoint;
         }
 
-        catch (PropertyNotFoundException ex){
-            throw ex;
-        }
         catch (IOException ex){
             throw new BinCollectionGatewayException(ex.getMessage());
         }
 
         finally {
-            logger().debug("This is a debug statement from the LoggingFacade");
+            logger().debug("Exiting getBinCollectionScheduleEndpointForProperty");
         }
     }
 
@@ -78,12 +77,31 @@ public class BinCollectionGateway implements GetBinCollectionForProperty, Loggin
     }
 
     String getWebDocument(String addressEndpoint) throws IOException {
-        //TODO - Looks like this can be returned "java.lang.IllegalArgumentException: Must supply a valid URL" from this JSOUP command.
-        return Jsoup.connect(addressEndpoint).ignoreContentType(true).execute().body();
+
+        final Integer retryLimit = 5;
+        String response = null;
+
+        Integer attemptCount = 0;
+        boolean succeeded = false;
+
+        while ((!succeeded) && (attemptCount < retryLimit)) {
+            try {
+                attemptCount += 1;
+                response = Jsoup.connect(addressEndpoint).ignoreContentType(true).execute().body();
+                succeeded = true;
+
+            } catch (HttpStatusException he) {
+                logger().debug("HTTP Status Exception returned from endpoint " + addressEndpoint + " - attempt " + attemptCount.toString() + " of " + retryLimit.toString());
+
+                if (attemptCount == retryLimit) {
+                    throw new IOException("Failed to connect to " + addressEndpoint + ". Service unavailable.");
+                }
+            }
+        }
+        return response;
     }
 
     String getCollectionEndpointPartFromHtml(String htmlWithCollectionEndpoint){
-
 
         Document doc;
         doc = Jsoup.parse(htmlWithCollectionEndpoint);
@@ -92,7 +110,6 @@ public class BinCollectionGateway implements GetBinCollectionForProperty, Loggin
         linkHref =  linkHref.substring(8, (linkHref.length() - 3));
 
         return linkHref;
-
     }
 
     String buildUrl(String baseUrl, String path, String resource) throws UnsupportedEncodingException{
