@@ -19,22 +19,7 @@ import com.google.gson.*;
 import org.apache.commons.lang3.*;
 
 /**
- * Sorts the specified list according to the order induced by the
- * specified comparator.  All elements in the list must be <i>mutually
- * comparable</i> using the specified comparator (that is,
- * {@code c.compare(e1, e2)} must not throw a {@code ClassCastException}
- * for any elements {@code e1} and {@code e2} in the list).
- *
- * @param  list the list to be sorted.
- * @param  c the comparator to determine the order of the list.  A
- *        {@code null} value indicates that the elements' <i>natural
- *        ordering</i> should be used.
- * @throws ClassCastException if the list contains elements that are not
- *         <i>mutually comparable</i> using the specified comparator.
- * @throws UnsupportedOperationException if the specified list's
- *         list-iterator does not support the {@code set} operation.
- * @throws IllegalArgumentException (optional) if the comparator is
- *         found to violate the {@link Comparator} contract
+
  */
 public class BinCollectionGateway implements GetBinCollectionForProperty, LoggingFacade {
 
@@ -64,7 +49,7 @@ public class BinCollectionGateway implements GetBinCollectionForProperty, Loggin
             return collectionEndpoint;
         }
 
-        catch (IOException ex){
+        catch (Exception ex){
             throw new BinCollectionGatewayException(ex.getMessage());
         }
 
@@ -82,18 +67,19 @@ public class BinCollectionGateway implements GetBinCollectionForProperty, Loggin
     }
 
     /**
-     * Extracts an HTML document containing an embedded URL
-     * from a source JSON document retrieved from a
-     * service provider.
+     * Extracts an HTML document from a source JSON document.
+     * The source JSON document is retrieved from a
+     * service provider endpoint.
      *
-     * @param  address The first line of the address used as
+     * @param  firstLineOfAddress The first line of the address used as
      *                 input to the service provider's address index.
      * @throws IOException (optional) from getWebDocument
      * @throws PropertyNotFoundException (optional) if the request to address index retusn
      */
-    String getHtmlEncodedCollectionPathForAddress(String address) throws IOException, PropertyNotFoundException {
 
-        String addressEndpoint = buildUrl(this.serviceProviderUrlBase, this.serviceProviderUrlAddressPath, address);
+    String getHtmlEncodedCollectionPathForAddress(String firstLineOfAddress) throws IOException, PropertyNotFoundException {
+
+        String addressEndpoint = buildUrl(this.serviceProviderUrlBase, this.serviceProviderUrlAddressPath, firstLineOfAddress);
         String json = getWebDocument(addressEndpoint);
 
         Gson gson = new GsonBuilder().create();
@@ -135,13 +121,18 @@ public class BinCollectionGateway implements GetBinCollectionForProperty, Loggin
         return response;
     }
 
-    String getCollectionEndpointPartFromHtml(String htmlWithCollectionEndpoint){
+    String getCollectionEndpointPartFromHtml(String htmlWithCollectionEndpoint) throws Exception{
 
-        Document doc;
-        doc = Jsoup.parse(htmlWithCollectionEndpoint);
+        Integer endpointStartPosition = 8;
+        Integer endpointTrailingCharacterCount = 3;
+
+        Document doc = Jsoup.parse(htmlWithCollectionEndpoint);
         Element link = doc.select("a").first();
         String linkHref = link.attr("href");
-        linkHref =  linkHref.substring(8, (linkHref.length() - 3));
+
+        if (linkHref.length() <= endpointStartPosition){ throw new Exception("Failed to identify valid endpoint HTML. Received - " + linkHref.toString());};
+
+        linkHref =  linkHref.substring(endpointStartPosition, (linkHref.length() - endpointTrailingCharacterCount));
 
         return linkHref;
     }
@@ -154,8 +145,6 @@ public class BinCollectionGateway implements GetBinCollectionForProperty, Loggin
 
         return builtUrl;
     }
-
-
 
 
     private String getHtmlPage(String endPoint){
@@ -186,7 +175,7 @@ public class BinCollectionGateway implements GetBinCollectionForProperty, Loggin
         GetBinCollectionForProperty gt = new BinCollectionGateway("https://lisburn.isl-fusion.com","/address","/view","No results found for the search text provided");
 
         try {
-            String htmlWithEndpoint = gt.getBinCollectionScheduleEndpointForProperty(" 61111 kesh road ");
+            String htmlWithEndpoint = gt.getBinCollectionScheduleEndpointForProperty(" 61 kesh road ");
             System.out.println(htmlWithEndpoint);
         }
         catch (BinCollectionGatewayException ex){
