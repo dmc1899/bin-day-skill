@@ -18,7 +18,24 @@ import com.google.gson.*;
 
 import org.apache.commons.lang3.*;
 
-
+/**
+ * Sorts the specified list according to the order induced by the
+ * specified comparator.  All elements in the list must be <i>mutually
+ * comparable</i> using the specified comparator (that is,
+ * {@code c.compare(e1, e2)} must not throw a {@code ClassCastException}
+ * for any elements {@code e1} and {@code e2} in the list).
+ *
+ * @param  list the list to be sorted.
+ * @param  c the comparator to determine the order of the list.  A
+ *        {@code null} value indicates that the elements' <i>natural
+ *        ordering</i> should be used.
+ * @throws ClassCastException if the list contains elements that are not
+ *         <i>mutually comparable</i> using the specified comparator.
+ * @throws UnsupportedOperationException if the specified list's
+ *         list-iterator does not support the {@code set} operation.
+ * @throws IllegalArgumentException (optional) if the comparator is
+ *         found to violate the {@link Comparator} contract
+ */
 public class BinCollectionGateway implements GetBinCollectionForProperty, LoggingFacade {
 
     private final String encoding = "UTF-8";
@@ -57,6 +74,23 @@ public class BinCollectionGateway implements GetBinCollectionForProperty, Loggin
     }
 
 
+    public PropertyBinCollectionSchedule getBinCollectionScheduleForProperty(String endPoint) {
+        PropertyBinCollectionSchedule binSchedule = new PropertyBinCollectionSchedule();
+        binSchedule.setTestVal("bin collection schedule (taken from " + endPoint);
+
+        return binSchedule;
+    }
+
+    /**
+     * Extracts an HTML document containing an embedded URL
+     * from a source JSON document retrieved from a
+     * service provider.
+     *
+     * @param  address The first line of the address used as
+     *                 input to the service provider's address index.
+     * @throws IOException (optional) from getWebDocument
+     * @throws PropertyNotFoundException (optional) if the request to address index retusn
+     */
     String getHtmlEncodedCollectionPathForAddress(String address) throws IOException, PropertyNotFoundException {
 
         String addressEndpoint = buildUrl(this.serviceProviderUrlBase, this.serviceProviderUrlAddressPath, address);
@@ -122,12 +156,7 @@ public class BinCollectionGateway implements GetBinCollectionForProperty, Loggin
     }
 
 
-    public PropertyBinCollectionSchedule getBinCollectionScheduleForProperty(String endPoint) {
-        PropertyBinCollectionSchedule binSchedule = new PropertyBinCollectionSchedule();
-        binSchedule.setTestVal("bin collection schedule (taken from " + endPoint);
 
-        return binSchedule;
-    }
 
     private String getHtmlPage(String endPoint){
         Document doc;
