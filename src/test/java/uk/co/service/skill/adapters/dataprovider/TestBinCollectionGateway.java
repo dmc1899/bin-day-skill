@@ -23,7 +23,7 @@ public class TestBinCollectionGateway {
     @Before
     public void setUp(){
         System.out.println("setup...");
-        //binCollectionGateway = new BinCollectionGateway("https://lisburn.isl-fusion.com","/address","/view","No results found for the search text provided");
+        binCollectionGateway = new BinCollectionGateway("https://lisburn.isl-fusion.com","/address","/view","No results found for the search text provided");
     }
 
     @After
@@ -63,65 +63,40 @@ public class TestBinCollectionGateway {
     }
 
     @Test
-    public void extractEndpointFromValidHtml() {
+    public void extractEndpointFromValidHtml() throws Exception {
 
         String actualOutput = null;
         String expectedOutput = "nsatFRHo9XP4h1qM";
         String givenInput = getResourceContentsAsString("/SingleAddressFound.html");
 
-        try{
-            actualOutput = binCollectionGateway.getCollectionEndpointPartFromHtml(givenInput);
-            System.out.println(actualOutput);
-        }
-        catch (Exception ex){ }
+        actualOutput = binCollectionGateway.getCollectionEndpointPartFromHtml(givenInput);
+        System.out.println(actualOutput);
 
         assertEquals(actualOutput, expectedOutput);
     }
 
     @Test
-    public void extractLargeEndpointFromValidHtml() {
+    public void extractLargeEndpointFromValidHtml() throws Exception{
 
         String actualOutput = null;
         String expectedOutput = "nsatFRHo9XP4h1qMnsatFRHo9XP4h1qMnsatFRHo9XP4h1qMnsatFRHo9XP4h1qMnsatFRHo9XP4h1qMnsatFRHo9XP4h1qM";
         String givenInput = getResourceContentsAsString("/SingleLargeAddressFound.html");
 
-        try{
-            actualOutput = binCollectionGateway.getCollectionEndpointPartFromHtml(givenInput);
-            System.out.println(actualOutput);
-        }
-        catch (Exception ex){ }
+        actualOutput = binCollectionGateway.getCollectionEndpointPartFromHtml(givenInput);
+        System.out.println(actualOutput);
 
         assertEquals(actualOutput, expectedOutput);
     }
 
     @Test
-    public void extractEndpointFromPropertyNotFoundHtml() {
-
-        String actualOutput = null;
-        String expectedOutput = "nsatFRHo9XP4h1qMnsatFRHo9XP4h1qMnsatFRHo9XP4h1qMnsatFRHo9XP4h1qMnsatFRHo9XP4h1qMnsatFRHo9XP4h1qM";
-        String givenInput = getResourceContentsAsString("/NoAddressFoundEmbeddedHtml.html");
-
-        try{
-            actualOutput = binCollectionGateway.getCollectionEndpointPartFromHtml(givenInput);
-            System.out.println(actualOutput);
-        }
-        catch (Exception ex){ }
-
-        assertEquals(actualOutput, expectedOutput);
-    }
-
-    @Test
-    public void extractEndpointFromInvalidHtml() {
+    public void extractEndpointFromInvalidHtml() throws Exception {
 
         String actualOutput = null;
         String expectedOutput = null;
         String givenInput = getResourceContentsAsString("/NoAddressFoundInvalidHtml.html");
 
-        try{
-            actualOutput = binCollectionGateway.getCollectionEndpointPartFromHtml(givenInput);
-            System.out.println(actualOutput);
-        }
-        catch (Exception ex){ }
+        actualOutput = binCollectionGateway.getCollectionEndpointPartFromHtml(givenInput);
+        System.out.println(actualOutput);
 
         assertEquals(actualOutput, expectedOutput);
     }
@@ -131,18 +106,26 @@ public class TestBinCollectionGateway {
 
         String givenInput = getResourceContentsAsString("/SingleAddressFound.json");
         String expectedOutput = getResourceContentsAsString("/SingleAddressFound.html");
-        BinCollectionGateway binCollectionGateway = Mockito.spy(new BinCollectionGateway("https://lisburn.isl-fusion.com", "/address", "/view", "No results found for the search text provided"));
-        doReturn(givenInput).when(binCollectionGateway).getWebDocument(anyString());
+        BinCollectionGateway binCollectionGatewaySpy = Mockito.spy(new BinCollectionGateway("https://lisburn.isl-fusion.com", "/address", "/view", "No results found for the search text provided"));
+        doReturn(givenInput).when(binCollectionGatewaySpy).getWebDocument(anyString());
 
         String actualOutput = null;
-        
-        try{
-            actualOutput = binCollectionGateway.getHtmlEncodedCollectionPathForAddress("input parameter does not matter here");
-            System.out.println(actualOutput);
-        }
-        catch (Exception ex){ }
+
+        actualOutput = binCollectionGatewaySpy.getHtmlEncodedCollectionPathForAddress("input parameter does not matter here");
+        System.out.println(actualOutput);
 
         assertEquals(expectedOutput, actualOutput);
+    }
+
+    @Test(expected = PropertyNotFoundException.class)
+    public void extractHtmlFromNotFoundAddressSearchJsonResponse() throws Exception{
+
+        String givenInput = getResourceContentsAsString("/NoAddressFound.json");
+
+        BinCollectionGateway binCollectionGatewaySpy = Mockito.spy(new BinCollectionGateway("https://lisburn.isl-fusion.com", "/address", "/view", "No results found for the search text provided"));
+        doReturn(givenInput).when(binCollectionGatewaySpy).getWebDocument(anyString());
+
+        String actualOutput =  binCollectionGatewaySpy.getHtmlEncodedCollectionPathForAddress("input parameter does not matter here");
     }
 
 }
