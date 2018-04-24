@@ -9,6 +9,7 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Bin Day Skill</name>
+    <description>Returns the next bin collection event for a given address.</description>
     <url>http://www.www.com</url>
 
     <properties>
