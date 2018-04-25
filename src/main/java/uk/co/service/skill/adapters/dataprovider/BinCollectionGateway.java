@@ -2,7 +2,9 @@ package uk.co.service.skill.adapters.dataprovider;
 
 import org.jsoup.HttpStatusException;
 import uk.co.service.skill.LoggingFacade;
+import uk.co.service.skill.adapters.dataprovider.web.AddressPageParser;
 import uk.co.service.skill.adapters.dataprovider.web.BasicWebDocumentClient;
+import uk.co.service.skill.adapters.dataprovider.web.Url;
 import uk.co.service.skill.adapters.dataprovider.web.WebDocumentClient;
 import uk.co.service.skill.entities.PropertyBinCollectionSchedule;
 import uk.co.service.skill.usecases.bincollection.outbound.GetBinCollectionForProperty;
@@ -42,19 +44,19 @@ public class BinCollectionGateway implements GetBinCollectionForProperty, Loggin
         this.webDocumentClient = webDocumentClient;
     }
 
-    public String getBinCollectionScheduleEndpointForProperty(String firstLineOfAddress) throws BinCollectionGatewayException, PropertyNotFoundException{
+    public String getBinCollectionScheduleEndpointForProperty(String firstLineOfAddress) throws PropertyNotFoundException{
 
         logger().debug("Entering getBinCollectionScheduleEndpointForProperty");
 
         try {
-            String htmlWithEndpoint = getHtmlEncodedCollectionPathForAddress(firstLineOfAddress);
-            String collectionEndpointPart = getCollectionEndpointPartFromHtml(htmlWithEndpoint);
-            String collectionEndpoint = buildUrl(this.serviceProviderUrlBase, this.serviceProviderUrlCollectionPath, collectionEndpointPart);
-            return collectionEndpoint;
+            String addressSearchResponseJson = webDocumentClient.getJson(firstLineOfAddress);
+            AddressPageParser addressPageParser = new AddressPageParser(addressSearchResponseJson);
+            String addressUrlPart = addressPageParser.getAddressUrl();
+            return Url.buildUrl(serviceProviderUrlBase, serviceProviderUrlCollectionPath, addressUrlPart);
         }
 
         catch (Exception ex){
-            throw new BinCollectionGatewayException(ex.getMessage());
+            throw new PropertyNotFoundException(ex.getMessage());
         }
 
         finally {
