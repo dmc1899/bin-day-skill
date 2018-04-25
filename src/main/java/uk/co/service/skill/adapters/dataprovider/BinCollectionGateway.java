@@ -2,6 +2,8 @@ package uk.co.service.skill.adapters.dataprovider;
 
 import org.jsoup.HttpStatusException;
 import uk.co.service.skill.LoggingFacade;
+import uk.co.service.skill.adapters.dataprovider.web.BasicWebDocumentClient;
+import uk.co.service.skill.adapters.dataprovider.web.WebDocumentClient;
 import uk.co.service.skill.entities.PropertyBinCollectionSchedule;
 import uk.co.service.skill.usecases.bincollection.outbound.GetBinCollectionForProperty;
 
@@ -28,14 +30,16 @@ public class BinCollectionGateway implements GetBinCollectionForProperty, Loggin
     private String serviceProviderUrlBase = "https://lisburn.isl-fusion.com";
     private String serviceProviderUrlAddressPath = "/address";
     private String serviceProviderUrlCollectionPath = "/view";
+    private WebDocumentClient webDocumentClient = new BasicWebDocumentClient();
 
     public BinCollectionGateway(){};
 
-    public BinCollectionGateway(String serviceProviderUrlBase, String serviceProviderUrlAddressPath, String serviceProviderUrlCollectionPath, String addressNotFoundResponseText){
+    public BinCollectionGateway(String serviceProviderUrlBase, String serviceProviderUrlAddressPath, String serviceProviderUrlCollectionPath, String addressNotFoundResponseText, WebDocumentClient webDocumentClient){
         this.serviceProviderUrlBase = serviceProviderUrlBase;
         this.serviceProviderUrlAddressPath = serviceProviderUrlAddressPath;
         this.serviceProviderUrlCollectionPath = serviceProviderUrlCollectionPath;
         this.addressNotFoundResponseText = addressNotFoundResponseText;
+        this.webDocumentClient = webDocumentClient;
     }
 
     public String getBinCollectionScheduleEndpointForProperty(String firstLineOfAddress) throws BinCollectionGatewayException, PropertyNotFoundException{
@@ -172,7 +176,8 @@ public class BinCollectionGateway implements GetBinCollectionForProperty, Loggin
 
 
         //1. Gateway to website
-        GetBinCollectionForProperty gt = new BinCollectionGateway("https://lisburn.isl-fusion.com","/address","/view","No results found for the search text provided");
+        GetBinCollectionForProperty gt = new BinCollectionGateway("https://lisburn.isl-fusion.com", "/address", "/view", "No results found for the search text provided", new BasicWebDocumentClient() {
+        });
 
         try {
             String htmlWithEndpoint = gt.getBinCollectionScheduleEndpointForProperty(" 61 kesh road ");

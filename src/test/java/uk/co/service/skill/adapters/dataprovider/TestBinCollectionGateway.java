@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.co.service.skill.adapters.dataprovider.web.BasicWebDocumentClient;
 
 import static org.mockito.Mockito.*;
 
@@ -22,7 +23,7 @@ public class TestBinCollectionGateway {
     @Before
     public void setUp(){
         System.out.println("setup...");
-        binCollectionGateway = new BinCollectionGateway("https://lisburn.isl-fusion.com","/address","/view","No results found for the search text provided");
+        binCollectionGateway = new BinCollectionGateway("https://lisburn.isl-fusion.com","/address","/view","No results found for the search text provided", new BasicWebDocumentClient());
     }
 
     @After
@@ -93,7 +94,7 @@ public class TestBinCollectionGateway {
 
         String givenInput = getResourceContentsAsString("/SingleAddressFound.json");
         String expectedOutput = getResourceContentsAsString("/SingleAddressFound.html");
-        BinCollectionGateway binCollectionGatewaySpy = Mockito.spy(new BinCollectionGateway("https://lisburn.isl-fusion.com", "/address", "/view", "No results found for the search text provided"));
+        BinCollectionGateway binCollectionGatewaySpy = Mockito.spy(new BinCollectionGateway("https://lisburn.isl-fusion.com", "/address", "/view", "No results found for the search text provided", new BasicWebDocumentClient()));
         doReturn(givenInput).when(binCollectionGatewaySpy).getWebDocument(anyString());
 
         String actualOutput = null;
@@ -109,7 +110,7 @@ public class TestBinCollectionGateway {
 
         String givenInput = getResourceContentsAsString("/NoAddressFound.json");
 
-        BinCollectionGateway binCollectionGatewaySpy = Mockito.spy(new BinCollectionGateway("https://lisburn.isl-fusion.com", "/address", "/view", "No results found for the search text provided"));
+        BinCollectionGateway binCollectionGatewaySpy = Mockito.spy(new BinCollectionGateway("https://lisburn.isl-fusion.com", "/address", "/view", "No results found for the search text provided",new BasicWebDocumentClient()));
         doReturn(givenInput).when(binCollectionGatewaySpy).getWebDocument(anyString());
 
         String actualOutput =  binCollectionGatewaySpy.getHtmlEncodedCollectionPathForAddress("input parameter does not matter here");
@@ -124,7 +125,7 @@ public class TestBinCollectionGateway {
         String mockedUrl = "https://lisburn.isl-fusion.com/view/nsatFRHo9XP4h1qM";
         String expectedOutput = "https://lisburn.isl-fusion.com/view/nsatFRHo9XP4h1qM";
 
-        BinCollectionGateway binCollectionGatewaySpy = Mockito.spy(new BinCollectionGateway("https://lisburn.isl-fusion.com", "/address", "/view", "No results found for the search text provided"));
+        BinCollectionGateway binCollectionGatewaySpy = Mockito.spy(new BinCollectionGateway("https://lisburn.isl-fusion.com", "/address", "/view", "No results found for the search text provided", new BasicWebDocumentClient()));
 
 //        doReturn(mockedSingleAddressJson).when(binCollectionGatewaySpy).getWebDocument(anyString());
         doReturn(mockedSingleAddressHtml).when(binCollectionGatewaySpy).getHtmlEncodedCollectionPathForAddress(anyString());
@@ -145,7 +146,7 @@ public class TestBinCollectionGateway {
         String mockedSingleAddressJson = getResourceContentsAsString("/SingleAddressFound.json");
         String expectedOutput = "https://lisburn.isl-fusion.com/view/nsatFRHo9XP4h1qM";
 
-        BinCollectionGateway binCollectionGatewaySpy = Mockito.spy(new BinCollectionGateway("https://lisburn.isl-fusion.com", "/address", "/view", "No results found for the search text provided"));
+        BinCollectionGateway binCollectionGatewaySpy = Mockito.spy(new BinCollectionGateway("https://lisburn.isl-fusion.com", "/address", "/view", "No results found for the search text provided", new BasicWebDocumentClient()));
 
         doReturn(mockedSingleAddressJson).when(binCollectionGatewaySpy).getWebDocument(anyString());
 

@@ -1,6 +1,7 @@
 package uk.co.service.skill.drivers;
 
 import uk.co.service.skill.adapters.dataprovider.BinCollectionGateway;
+import uk.co.service.skill.adapters.dataprovider.web.BasicWebDocumentClient;
 import uk.co.service.skill.adapters.mvc.BinCollectionController;
 import uk.co.service.skill.adapters.mvc.BinCollectionSchedulePresenter;
 import uk.co.service.skill.adapters.mvc.GetNextBinCollectionView;
@@ -15,7 +16,7 @@ public class BinCollectionScheduleFactory {
         //Wire up the system.
 
         //1. Gateway to website
-        GetBinCollectionForProperty myBinCollectionForProperty = new BinCollectionGateway("https://lisburn.isl-fusion.com","/address","/view","No results found for the search text provided");
+        GetBinCollectionForProperty myBinCollectionForProperty = new BinCollectionGateway("https://lisburn.isl-fusion.com","/address","/view","No results found for the search text provided", new BasicWebDocumentClient());
 
         //2 Create the use Case
         GetNextBinCollectionEventForPropertyInputBoundary useCase = new GetNextBinCollectionEventForPropertyImpl(myBinCollectionForProperty);
