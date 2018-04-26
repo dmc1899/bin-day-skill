@@ -1,6 +1,6 @@
 package uk.co.service.skill.test.common;
 
-import uk.co.service.skill.adapters.dataprovider.TestBinCollectionGateway;
+import uk.co.service.skill.adapters.dataprovider.BinCollectionGatewayTest;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -10,7 +10,7 @@ import java.nio.file.Path;
 public class TestUtils {
 
     public static String getResourceContentsAsString(String pathToResource) {
-        URL url = TestBinCollectionGateway.class.getResource(pathToResource);
+        URL url = BinCollectionGatewayTest.class.getResource(pathToResource);
         Path resPath = null;
         String resourceContents = null;
         try {

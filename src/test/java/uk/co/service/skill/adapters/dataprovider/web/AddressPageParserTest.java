@@ -12,12 +12,13 @@ import uk.co.service.skill.adapters.dataprovider.PropertyNotFoundException;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doReturn;
 import static uk.co.service.skill.test.common.TestUtils.getResourceContentsAsString;
 
 @RunWith(MockitoJUnitRunner.class)
-public class TestAddressPageParser {
+public class AddressPageParserTest {
 
     private BinCollectionGateway binCollectionGateway;
     private AddressPageParser addressPageParser;
@@ -49,7 +50,7 @@ public class TestAddressPageParser {
         addressPageParser = new AddressPageParser(singleAddressJson);
         String actualOutput = addressPageParser.getAddressUrl();
 
-
+        fail();
     }
 
     @Test
