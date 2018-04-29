@@ -7,9 +7,29 @@ import uk.co.service.skill.adapters.dataprovider.PropertyNotFoundException;
 import uk.co.service.skill.adapters.dataprovider.ServiceProviderUnavailableException;
 
 import java.io.IOException;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class BasicWebDocumentClient implements WebDocumentClient, LoggingFacade {
+
+//private WebDocumentClientRequestor webDocumentClientRequestor = new WebDocumentClientRequestor();
+
+    public String getJsonWebDocument (String url)  {
+
+        String result = null;
+        //result = Jsoup.connect(url).ignoreContentType(true).execute().body();
+        try {
+            result = Jsoup.connect(url).ignoreContentType(true).execute().body();
+        }
+        catch (IllegalArgumentException e){        throw new IllegalArgumentException();}
+
+
+        catch (IOException e) {
+            throw new RuntimeException();
+
+        }
+        return result;
+    }
 
 
     public Integer method1(int a){return 1 + a;};
@@ -20,6 +40,9 @@ public class BasicWebDocumentClient implements WebDocumentClient, LoggingFacade 
     }
 
     public static void main(String args[]){
+
+        //Consumer<String> c = s -> System.out.println(s);
+
         BasicWebDocumentClient b = new BasicWebDocumentClient();
         Integer result = b.test(b::method1);
         System.out.println(result);
@@ -28,13 +51,23 @@ public class BasicWebDocumentClient implements WebDocumentClient, LoggingFacade 
     }
 
     @Override
-    public String getJson(String url) {
+    public String getHtml(String url) {
         return null;
     }
 
     @Override
-    public String getHtml(String url) {
+    public String getJson(String url) {
 
+        String result = null;
+        try {
+            result = this.getWebDocument(url, this::getJsonWebDocument);
+        }
+        catch (Exception e){}
+        return result;
+    }
+
+
+    private String getWebDocument(String url, Function<String, String> getThisWebDocument) {
         // TODO - find a way of injecting a different implementation of of the request to get content
         // so that this method can be re-used by Json and HTml
         final Integer retryLimit = 5;
@@ -46,10 +79,13 @@ public class BasicWebDocumentClient implements WebDocumentClient, LoggingFacade 
         while ((!succeeded) && (attemptCount < retryLimit)) {
             try {
                 attemptCount += 1;
-                response = Jsoup.connect(url).ignoreContentType(true).execute().body();
+                response = getThisWebDocument.apply(url);
                 succeeded = true;
 
-            } catch (HttpStatusException he) {
+            } catch (Exception he) {
+                if (he instanceof IOException){
+                    System.out.println("IOException");
+                }
                 logger().debug("HTTP Status Exception returned from endpoint " + url + " - attempt " + attemptCount.toString() + " of " + retryLimit.toString());
 
                 if (attemptCount == retryLimit) {
@@ -63,12 +99,14 @@ public class BasicWebDocumentClient implements WebDocumentClient, LoggingFacade 
                 }
 
 
-            } catch (IOException | IllegalArgumentException e) {
-                throw new ServiceProviderUnavailableException("Failed to connect to " + url + " due to: " + e.getMessage());
+//            } catch (HttpStatusException e) {
+//                throw new ServiceProviderUnavailableException("Failed to connect to " + url + " due to: " + e.getMessage());
+//
+//            }
 
             }
-
         }
         return response;
     }
+
 }
