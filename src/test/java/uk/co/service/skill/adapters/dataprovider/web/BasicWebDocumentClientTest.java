@@ -1,6 +1,11 @@
 package uk.co.service.skill.adapters.dataprovider.web;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.junit.Test;
+import uk.co.service.skill.adapters.dataprovider.exceptions.ServiceProviderUnavailableException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -9,34 +14,54 @@ public class BasicWebDocumentClientTest {
 
     private final WebDocumentClient webDocumentClient = new BasicWebDocumentClient();
 
-    @Test
+    @Test(expected = ServiceProviderUnavailableException.class)
     public void getHttpStatusException() throws Exception{
 
         String result = null;
-        String expectedJsonResult = "http://www.google.comnewpage/this+is+a+string+with+a+lot+of+%5E%26*%29%24%29%C2%A3%27%27%27%3F%3F+characters";
 
         WebDocumentClient webDocumentClient = new BasicWebDocumentClient();
-        String actualJsonResult = webDocumentClient.getHtml("https://httpstat.us/404");
+        String actualJsonResult = webDocumentClient.getWebDocument("https://httpstat.us/404");
 
-        assertEquals(expectedJsonResult, actualJsonResult);
+        fail("Exception expected but failed to materialise.");
     }
 
-//    @Test
-//    public void shouldThrowScraperExceptionIfCannotLoadHtml() {
-//        try {
-//            webDocumentClient.getHtml("invalid");
-//            fail();
-//        } catch (ScraperException e) {
-//            assertThat(e.getMessage()).isEqualTo("could not load html from url: invalid");
-//        }
-//    }
-//
-//    //should load valid JSON from https://api.github.com/users/mralexgray/repos
-//    //should load valid HTML from https://www.google.com/
-//    @Test
-//    public void shouldLoadHtml() {
-//        String html = htmlGetter.getHtml("http://www.google.com");
-//        Document document = Jsoup.parse(html);
-//        assertThat(document.title()).isEqualTo("Google");
-//    }
+    @Test
+    public void getValidJsonDocument() throws Exception{
+
+        String result = null;
+        String url = "https://jsonplaceholder.typicode.com/posts/1";
+
+        WebDocumentClient webDocumentClient = new BasicWebDocumentClient();
+        String actualJsonResult = webDocumentClient.getWebDocument(url);
+
+        try {
+            JsonParser parser = new JsonParser();
+            JsonObject jsonObject = parser.parse(actualJsonResult).getAsJsonObject();
+        }
+        catch (IllegalStateException e){
+            fail("Failed to retrieve valid JSON document from " + url);
+        }
+    }
+
+    @Test
+    public void getValidHtmlDocument() throws Exception{
+
+        String actualDocumentTitle = null;
+        String expectedDocumentTitle = "Google";
+        String url = "https://www.google.com";
+
+        WebDocumentClient webDocumentClient = new BasicWebDocumentClient();
+        String actualHtmlResult = webDocumentClient.getWebDocument(url);
+
+        try {
+            Document doc = Jsoup.parse(actualHtmlResult);
+            actualDocumentTitle = doc.title();
+
+        }
+        catch (Exception e){
+            fail("Failed to retrieve valid HTML document from " + url);
+        }
+
+        assertEquals(expectedDocumentTitle, actualDocumentTitle);
+    }
 }

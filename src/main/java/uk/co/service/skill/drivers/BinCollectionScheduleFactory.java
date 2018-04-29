@@ -1,13 +1,13 @@
 package uk.co.service.skill.drivers;
 
-import uk.co.service.skill.adapters.dataprovider.BinCollectionGateway;
+import uk.co.service.skill.adapters.dataprovider.LcccGetBinCollectionScheduleGateway;
 import uk.co.service.skill.adapters.dataprovider.web.BasicWebDocumentClient;
 import uk.co.service.skill.adapters.mvc.BinCollectionController;
 import uk.co.service.skill.adapters.mvc.BinCollectionSchedulePresenter;
 import uk.co.service.skill.adapters.mvc.GetNextBinCollectionView;
 import uk.co.service.skill.usecases.bincollection.inbound.GetNextBinCollectionEventForPropertyInputBoundary;
 import uk.co.service.skill.usecases.bincollection.outbound.GetNextBinCollectionEventForPropertyOutputBoundary;
-import uk.co.service.skill.usecases.bincollection.outbound.GetBinCollectionForProperty;
+import uk.co.service.skill.usecases.bincollection.outbound.GetBinCollectionScheduleGateway;
 import uk.co.service.skill.usecases.bincollection.*;
 
 public class BinCollectionScheduleFactory {
@@ -16,7 +16,7 @@ public class BinCollectionScheduleFactory {
         //Wire up the system.
 
         //1. Gateway to website
-        GetBinCollectionForProperty myBinCollectionForProperty = new BinCollectionGateway("https://lisburn.isl-fusion.com","/address","/view","No results found for the search text provided", new BasicWebDocumentClient());
+        GetBinCollectionScheduleGateway myBinCollectionForProperty = new LcccGetBinCollectionScheduleGateway("https://lisburn.isl-fusion.com","/address","/view","No results found for the search text provided", new BasicWebDocumentClient());
 
         //2 Create the use Case
         GetNextBinCollectionEventForPropertyInputBoundary useCase = new GetNextBinCollectionEventForPropertyImpl(myBinCollectionForProperty);

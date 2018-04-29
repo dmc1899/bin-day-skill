@@ -4,23 +4,19 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.co.service.skill.adapters.dataprovider.BinCollectionGateway;
-import uk.co.service.skill.adapters.dataprovider.PropertyNotFoundException;
-
-import java.io.IOException;
+import uk.co.service.skill.adapters.dataprovider.LcccGetBinCollectionScheduleGateway;
+import uk.co.service.skill.adapters.dataprovider.exceptions.PropertyNotFoundException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doReturn;
 import static uk.co.service.skill.test.common.TestUtils.getResourceContentsAsString;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AddressPageParserTest {
 
-    private BinCollectionGateway binCollectionGateway;
+    private LcccGetBinCollectionScheduleGateway binCollectionGateway;
     private AddressPageParser addressPageParser;
 
     @Before
@@ -50,7 +46,7 @@ public class AddressPageParserTest {
         addressPageParser = new AddressPageParser(singleAddressJson);
         String actualOutput = addressPageParser.getAddressUrl();
 
-        fail();
+        fail("Exception expected but failed to materialise.");
     }
 
     @Test

@@ -6,7 +6,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import uk.co.service.skill.LoggingFacade;
-import uk.co.service.skill.adapters.dataprovider.PropertyNotFoundException;
+import uk.co.service.skill.adapters.dataprovider.exceptions.PropertyNotFoundException;
 
 public class AddressPageParser implements LoggingFacade {
 

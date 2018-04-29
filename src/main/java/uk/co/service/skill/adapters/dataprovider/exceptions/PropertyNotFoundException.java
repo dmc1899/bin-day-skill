@@ -1,4 +1,4 @@
-package uk.co.service.skill.adapters.dataprovider;
+package uk.co.service.skill.adapters.dataprovider.exceptions;
 
 /**
  *

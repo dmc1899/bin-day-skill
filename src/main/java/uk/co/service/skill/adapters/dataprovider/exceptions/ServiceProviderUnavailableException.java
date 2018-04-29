@@ -1,4 +1,4 @@
-package uk.co.service.skill.adapters.dataprovider;
+package uk.co.service.skill.adapters.dataprovider.exceptions;
 
 /**
  * An unchecked exception used to signify that the target service provider web
