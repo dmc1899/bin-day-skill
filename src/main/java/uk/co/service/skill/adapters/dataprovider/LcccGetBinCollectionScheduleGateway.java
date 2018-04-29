@@ -7,11 +7,11 @@ import uk.co.service.skill.adapters.dataprovider.web.BasicWebDocumentClient;
 import uk.co.service.skill.adapters.dataprovider.web.Url;
 import uk.co.service.skill.adapters.dataprovider.web.WebDocumentClient;
 import uk.co.service.skill.entities.PropertyBinCollectionSchedule;
+import uk.co.service.skill.adapters.dataprovider.exceptions.*;
 
-import java.io.IOException;
 
 /**
-
+ *  Lisburn & Castlereagh City Council implementation of Bin Collection Schedule Gateway.
  */
 public class LcccGetBinCollectionScheduleGateway implements uk.co.service.skill.usecases.bincollection.outbound.GetBinCollectionScheduleGateway, LoggingFacade {
 
@@ -33,14 +33,17 @@ public class LcccGetBinCollectionScheduleGateway implements uk.co.service.skill.
     }
 
     /**
-     * Extracts an HTML document from a source JSON document.
-     * The source JSON document is retrieved from a
-     * service provider endpoint.
+     * Attempts to identify the Bin Collection Schedule URL for the
+     * specified address.  Performs a search against an Address-URL
+     * service and returns a valid URL if found.
      *
      * @param  firstLineOfAddress The first line of the address used as
-     *                 input to the service provider's address index.
-     * @throws IOException (optional) from getWebDocument
-     * @throws PropertyNotFoundException (optional) if the request to address index retusn
+     *                            the free text search term.
+     * @throws ServiceProviderUnavailableException (optional) If the service provider
+     *                                              cannot be reached.
+     *
+     * @throws BinCollectionGatewayException (optional) If the returned URL cannot be handled.
+     * @throws PropertyNotFoundException (optional) If the request to address index returns no hits.
      */
     public String getBinCollectionScheduleUrlForProperty(String firstLineOfAddress) throws PropertyNotFoundException{
 
