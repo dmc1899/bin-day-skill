@@ -2,13 +2,9 @@ package uk.co.service.skill.adapters.dataprovider;
 
 import uk.co.service.skill.LoggingFacade;
 import uk.co.service.skill.adapters.dataprovider.exceptions.PropertyNotFoundException;
-import uk.co.service.skill.adapters.dataprovider.web.AddressPageParser;
-import uk.co.service.skill.adapters.dataprovider.web.BasicWebDocumentClient;
-import uk.co.service.skill.adapters.dataprovider.web.Url;
-import uk.co.service.skill.adapters.dataprovider.web.WebDocumentClient;
+import uk.co.service.skill.adapters.dataprovider.web.*;
 import uk.co.service.skill.entities.PropertyBinCollectionSchedule;
 import uk.co.service.skill.adapters.dataprovider.exceptions.*;
-
 
 /**
  *  Lisburn & Castlereagh City Council implementation of Bin Collection Schedule Gateway.
@@ -33,12 +29,13 @@ public class LcccGetBinCollectionScheduleGateway implements uk.co.service.skill.
     }
 
     /**
-     * Attempts to identify the Bin Collection Schedule URL for the
+     * Trys to identify the Bin Collection Schedule URL for the
      * specified address.  Performs a search against an Address-URL
      * service and returns a valid URL if found.
      *
-     * @param  firstLineOfAddress The first line of the address used as
-     *                            the free text search term.
+     * @param  firstLineOfAddress   The first line of the address used as
+     *                              the free text search term.
+     * @return                      The URL to the schedule for the given priority
      * @throws ServiceProviderUnavailableException (optional) If the service provider
      *                                              cannot be reached.
      *
@@ -53,15 +50,28 @@ public class LcccGetBinCollectionScheduleGateway implements uk.co.service.skill.
         String addressUrlPart = addressPageParser.getAddressUrl();
 
         return Url.buildUrl(serviceProviderUrlBase, serviceProviderUrlCollectionPath, addressUrlPart);
-
     }
 
+    /**
+     * Retrieves the HTML document from the provided URL. This document
+     * is marshalled into a {@see PropertyBinCollectionSchedule} object.
+     *
+     * @param  binCollectionScheduleUrl         The URL for the bin schedule for this property.
+     * @return PropertyBinCollectionSchedule    The URL to the schedule for the given priority
+     * @see     PropertyBinCollectionSchedule
+     * @throws ServiceProviderUnavailableException (optional) If the service provider
+     * @throws BinCollectionGatewayException (optional) If the returned URL cannot be handled.
+     */
+    public PropertyBinCollectionSchedule getBinCollectionScheduleForProperty(String binCollectionScheduleUrl) {
 
-    public PropertyBinCollectionSchedule getBinCollectionScheduleForProperty(String endPoint) {
-        uk.co.service.skill.entities.PropertyBinCollectionSchedule binSchedule = new uk.co.service.skill.entities.PropertyBinCollectionSchedule();
-        binSchedule.setTestVal("bin collection schedule (taken from " + endPoint);
+        String scheduleHtml = webDocumentClient.getWebDocument(binCollectionScheduleUrl);
 
-        return binSchedule;
+        SchedulePageParser schedulePageParser = new SchedulePageParser(scheduleHtml);
+
+        //Get the items.
+        PropertyBinCollectionSchedule propertyBinCollectionSchedule = new PropertyBinCollectionSchedule();
+        propertyBinCollectionSchedule.setTestVal("bin collection schedule (taken from ");
+
+        return propertyBinCollectionSchedule;
     }
-
 }

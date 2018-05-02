@@ -19,7 +19,7 @@ public class BinCollectionScheduleFactory {
         GetBinCollectionScheduleGateway myBinCollectionForProperty = new LcccGetBinCollectionScheduleGateway("https://lisburn.isl-fusion.com","/address","/view","No results found for the search text provided", new BasicWebDocumentClient());
 
         //2 Create the use Case
-        GetNextBinCollectionEventForPropertyInputBoundary useCase = new GetNextBinCollectionEventForPropertyImpl(myBinCollectionForProperty);
+        GetNextBinCollectionEventForPropertyInputBoundary useCase = new GetNextBinCollectionEventForProperty(myBinCollectionForProperty);
 
         //3. Create the output boundary
         GetNextBinCollectionEventForPropertyOutputBoundary outputBoundary = new BinCollectionSchedulePresenter();
