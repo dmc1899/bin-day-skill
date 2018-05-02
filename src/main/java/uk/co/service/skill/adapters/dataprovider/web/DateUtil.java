@@ -8,7 +8,8 @@ import java.util.TimeZone;
 
 public class DateUtil {
 
-    private static final String PREFERRED_DATE_FORMAT = "yyyy-MM-dd";
+    private static final String PREFERRED_DATE_FORMAT_PATTERN = "yyyy-MM-dd";
+    private SimpleDateFormat PREFERRED_DATE_FORMAT = new SimpleDateFormat(PREFERRED_DATE_FORMAT_PATTERN);
     private static final String ISO_8601_UTC_DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm'Z'";
     private static final String TIMEZONE = "UTC";
 
@@ -34,6 +35,6 @@ public class DateUtil {
     }
 
     public static String formatDate (String unformattedDate){
-        return unformattedDate;
+        return unformattedDate; //PREFERRED_DATE_FORMAT.format(new Date(unformattedDate));
     }
 }

@@ -16,7 +16,6 @@ import static uk.co.service.skill.test.common.TestUtils.getResourceContentsAsStr
 @RunWith(MockitoJUnitRunner.class)
 public class AddressPageParserTest {
 
-    private LcccGetBinCollectionScheduleGateway binCollectionGateway;
     private AddressPageParser addressPageParser;
 
     @Before

@@ -19,30 +19,25 @@ public class SchedulePageParser implements LoggingFacade {
 
     private final String html;
     private final Document document;
-    private final String startDate;
-    private final String endDate;
+    private  String startDate;
+    private  String endDate;
 
     public SchedulePageParser(String html) {
-
         this.html = html;
         this.document = Jsoup.parse(html);
-        String dateRange = document.getElementById(DATE_DISPLAY_SELECTOR).val();
-        String startDate = StringUtils.substringBefore(dateRange,DATE_DISPLAY_SEPARATOR).trim();
-        String endDate = StringUtils.substringAfter(dateRange,DATE_DISPLAY_SEPARATOR).trim();
-        this.startDate = DateUtil.formatDate(startDate); //Do we format here or outside this class?
-        this.endDate = DateUtil.formatDate(endDate);
+        setDateRangeValues(this.document);
     }
 
     public String getFirstLineOfAddress(){
         return "";
     }
 
-    public String getDateRange(){
-        return "";
+    public String getStartDate(){
+        return startDate;
     }
 
-    public String getNext(){
-        return "";
+    public String getEndDate(){
+        return endDate;
     }
 
     public String getSchedule() throws Exception {
@@ -70,5 +65,13 @@ public class SchedulePageParser implements LoggingFacade {
 //
 //        return linkHref;
         return "";
+    }
+
+    private void setDateRangeValues(Document document){
+        String dateRange = document.getElementById(DATE_DISPLAY_SELECTOR).text();
+        String startDate = StringUtils.substringBefore(dateRange,DATE_DISPLAY_SEPARATOR).trim();
+        String endDate = StringUtils.substringAfter(dateRange,DATE_DISPLAY_SEPARATOR).trim();
+        this.startDate = DateUtil.formatDate(startDate); //Do we format here or outside this class?
+        this.endDate = DateUtil.formatDate(endDate);
     }
 }
