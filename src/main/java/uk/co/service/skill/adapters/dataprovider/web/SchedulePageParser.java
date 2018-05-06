@@ -14,7 +14,6 @@ import uk.co.service.skill.adapters.dataprovider.exceptions.BinCollectionGateway
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -39,12 +38,13 @@ public class SchedulePageParser implements LoggingFacade {
     SimpleDateFormat dateFormatter = new SimpleDateFormat(DISPLAY_DATE_FORMAT);
 
     private final Document scheduleWebPage;
-    private  Date startDate = new Date();
-    private  Date endDate = null;
+    private Date displayStartDate;
+    private Date displayEndDate;
 
     public SchedulePageParser(String html) {
         this.scheduleWebPage = Jsoup.parse(html, PAGE_ENCODING);
-
+        setStartDate();
+        setEndDate();
     }
 
     public String getFirstLineOfAddress(){
@@ -52,38 +52,19 @@ public class SchedulePageParser implements LoggingFacade {
         return(resultLinks.first().text().trim());
     }
 
-    public Date getStartDate(){
-        Date startDate = null;
-        String dateRange = scheduleWebPage.getElementById(DISPLAY_DATE_ID).text();
-        String startDateString = StringUtils.substringBefore(dateRange, DISPLAY_DATE_SEPARATOR).trim();
-
-        try{
-            startDate = dateFormatter.parse(startDateString);
-        }
-        catch(ParseException pe){
-            throw new BinCollectionGatewayException("Failed to parse start date in Bin Schedule. Value - " + startDateString);
-        }
-        return startDate;
+    public Date getDisplayStartDate(){
+        return this.displayStartDate;
     }
 
-    public Date getEndDate(){
-        Date endDate = null;
-        String dateRange = scheduleWebPage.getElementById(DISPLAY_DATE_ID).text();
-        String endDateString = StringUtils.substringBefore(dateRange, DISPLAY_DATE_SEPARATOR).trim();
-
-        try{
-            endDate = dateFormatter.parse(endDateString);}
-        catch(ParseException pe){
-            throw new BinCollectionGatewayException("Failed to parse end date in Bin Schedule. Value - " + endDateString);
-        }
-        return endDate;
+    public Date getDisplayEndDate(){
+        return this.displayEndDate;
     }
 
     public List<CollectionScheduleEvent> getCollectionSchedule() {
         List<CollectionScheduleEvent> collectionScheduleEvents = new ArrayList<CollectionScheduleEvent>();
 
         MultiMap collectionSchedule = new MultiValueMap();
-        Date collectionDate  = this.startDate;
+        Date collectionDate  = this.displayStartDate;
 
         Element table = scheduleWebPage.selectFirst(SCHEDULE_SELECTOR);
 
@@ -104,6 +85,33 @@ public class SchedulePageParser implements LoggingFacade {
             }
         }
         return  collectionScheduleEvents;
+    }
+
+    private void setStartDate(){
+        Date startDate = null;
+        String dateRange = scheduleWebPage.getElementById(DISPLAY_DATE_ID).text();
+        String startDateString = StringUtils.substringBefore(dateRange, DISPLAY_DATE_SEPARATOR).trim();
+
+        try{
+            startDate = dateFormatter.parse(startDateString);
+        }
+        catch(ParseException pe){
+            throw new BinCollectionGatewayException("Failed to parse start date in Bin Schedule. Value - " + startDateString);
+        }
+        this.displayStartDate = startDate;
+    }
+
+    private void setEndDate(){
+        Date endDate = null;
+        String dateRange = scheduleWebPage.getElementById(DISPLAY_DATE_ID).text();
+        String endDateString = StringUtils.substringBefore(dateRange, DISPLAY_DATE_SEPARATOR).trim();
+
+        try{
+            endDate = dateFormatter.parse(endDateString);}
+        catch(ParseException pe){
+            throw new BinCollectionGatewayException("Failed to parse end date in Bin Schedule. Value - " + endDateString);
+        }
+        this.displayEndDate = endDate;
     }
 
     private List<String> getCollectionItems(Elements listItems){

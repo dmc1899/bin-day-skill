@@ -32,7 +32,11 @@ public class SchedulePageParserTest {
         schedulePageParser = new SchedulePageParser(singleScheduleHtml);
         List<CollectionScheduleEvent> collectionScheduleEvents = schedulePageParser.getCollectionSchedule();
         //MultiMap thisMultiMap = schedulePageParser.getCollectionSchedule();
-        System.out.println(collectionScheduleEvents);
+        for (CollectionScheduleEvent collectionScheduleEvent: collectionScheduleEvents){
+            System.out.println(collectionScheduleEvent.collectionDateInWords.toString());
+            System.out.println(collectionScheduleEvent.collectionDate.toString());
+            System.out.println(collectionScheduleEvent.collectionItems.toString());
+        }
 
     }
 
