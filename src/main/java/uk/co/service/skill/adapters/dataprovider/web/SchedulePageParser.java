@@ -14,13 +14,11 @@ import uk.co.service.skill.adapters.dataprovider.exceptions.BinCollectionGateway
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
-class CollectionSchedule {
-    public Date collectionDate;
-    public String collectionDateInWords;
-    public ArrayList<String> collectionItems;
-}
+import static org.apache.commons.lang3.time.DateUtils.addDays;
 
 public class SchedulePageParser implements LoggingFacade {
 
@@ -41,6 +39,8 @@ public class SchedulePageParser implements LoggingFacade {
     SimpleDateFormat dateFormatter = new SimpleDateFormat(DISPLAY_DATE_FORMAT);
 
     private final Document scheduleWebPage;
+    private  Date startDate = new Date();
+    private  Date endDate = null;
 
     public SchedulePageParser(String html) {
         this.scheduleWebPage = Jsoup.parse(html, PAGE_ENCODING);
@@ -79,31 +79,40 @@ public class SchedulePageParser implements LoggingFacade {
         return endDate;
     }
 
-    public CollectionSchedule getCollectionSchedule() {
+    public List<CollectionScheduleEvent> getCollectionSchedule() {
+        List<CollectionScheduleEvent> collectionScheduleEvents = new ArrayList<CollectionScheduleEvent>();
 
         MultiMap collectionSchedule = new MultiValueMap();
+        Date collectionDate  = this.startDate;
+
         Element table = scheduleWebPage.selectFirst(SCHEDULE_SELECTOR);
 
         for (Element row : table.select(TABLE_ROW_SELECTOR)){
+
             for (Element td: row.select(TABLE_CELL_SELECTOR)){
 
+                CollectionScheduleEvent collectionScheduleEvent = new CollectionScheduleEvent();
+                String collectionDateInWords = td.select(PARAGRAPH_ABBR_SELECTOR).first().attr(TITLE_ATRIB_SELECTOR);
+                Elements collectionItems = td.getElementsByTag(LIST_ITEM_SELECTOR);
 
-                String longDate = td.select(PARAGRAPH_ABBR_SELECTOR).first().attr(TITLE_ATRIB_SELECTOR);
-                System.out.println(longDate);
-                Elements items = td.getElementsByTag(LIST_ITEM_SELECTOR);
-                if (items.size() > 0) {
-                    Elements lis = td.select(LIST_LIST_ITEM_SELECTOR);
-                    for (Element li: lis){
-                        collectionSchedule.put(longDate, li.text());
-                    }
-                }
-                else{
-                    collectionSchedule.put(longDate, NO_COLLECTION_TEXT);
-                }
+                collectionScheduleEvent.collectionDateInWords = collectionDateInWords;
+                collectionScheduleEvent.collectionDate = collectionDate;
+                collectionScheduleEvent.collectionItems = getCollectionItems(collectionItems);
+                collectionScheduleEvents.add(collectionScheduleEvent);
+
+                collectionDate = addDays(collectionDate, 1);
             }
         }
-        return new CollectionSchedule();
-        //return collectionSchedule;
+        return  collectionScheduleEvents;
+    }
+
+    private List<String> getCollectionItems(Elements listItems){
+        List<String> collectionItems = new ArrayList<String>();
+
+        for (Element li: listItems){
+            collectionItems.add(li.text());
+        }
+        return collectionItems;
     }
 
     public static void main (String args[]){
