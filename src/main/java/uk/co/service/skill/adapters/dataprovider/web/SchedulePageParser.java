@@ -1,7 +1,10 @@
 package uk.co.service.skill.adapters.dataprovider.web;
 
+import org.apache.commons.collections4.MultiMap;
+import org.apache.commons.collections4.map.MultiValueMap;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import uk.co.service.skill.LoggingFacade;
 
@@ -10,16 +13,30 @@ import uk.co.service.skill.adapters.dataprovider.exceptions.BinCollectionGateway
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+
+class CollectionSchedule {
+    public Date collectionDate;
+    public String collectionDateInWords;
+    public ArrayList<String> collectionItems;
+}
 
 public class SchedulePageParser implements LoggingFacade {
 
+    private static final String NO_COLLECTION_TEXT = "None";
     private static final String PAGE_ENCODING = "UTF-8";
     private static final String DISPLAY_DATE_FORMAT = "dd/MM/yyyy";
     private static final String DISPLAY_DATE_SEPARATOR = "-";
     private static final String DISPLAY_DATE_ID = "dateDisplay";
-    private static final String DISPLAY_ADDRESS_SELECTOR = "body > div > div:nth-child(1) > h3";
-    private static final String DISPLAY_SCHEDULE_SELECTOR = "#calendarDisplay > div.table-responsive > table > tbody";
+    private static final String ADDRESS_SELECTOR = "body > div > div:nth-child(1) > h3";
+    private static final String SCHEDULE_SELECTOR = "#calendarDisplay > div.table-responsive > table";
+    private static final String TABLE_ROW_SELECTOR = "tr";
+    private static final String TABLE_CELL_SELECTOR = "td";
+    private static final String LIST_ITEM_SELECTOR = "li";
+    private static final String LIST_LIST_ITEM_SELECTOR = "ul > " + LIST_ITEM_SELECTOR;
+    private static final String PARAGRAPH_ABBR_SELECTOR = "p > abbr";
+    private static final String TITLE_ATRIB_SELECTOR = "title";
 
     SimpleDateFormat dateFormatter = new SimpleDateFormat(DISPLAY_DATE_FORMAT);
 
@@ -27,11 +44,11 @@ public class SchedulePageParser implements LoggingFacade {
 
     public SchedulePageParser(String html) {
         this.scheduleWebPage = Jsoup.parse(html, PAGE_ENCODING);
-        System.out.println(scheduleWebPage.select(DISPLAY_SCHEDULE_SELECTOR).toString());
+
     }
 
     public String getFirstLineOfAddress(){
-        Elements resultLinks = scheduleWebPage.select(DISPLAY_ADDRESS_SELECTOR);
+        Elements resultLinks = scheduleWebPage.select(ADDRESS_SELECTOR);
         return(resultLinks.first().text().trim());
     }
 
@@ -62,39 +79,31 @@ public class SchedulePageParser implements LoggingFacade {
         return endDate;
     }
 
-    public String getSchedule() throws Exception {
+    public CollectionSchedule getCollectionSchedule() {
 
-        // TODO - We will want to use a MultiMap to return the contents of the table.
-        // TODO - We will also want to walk the grid and assign an actual Date to each cell, or at least a proper date to a collection day.
-        // TODO - (ctd) we will also want to return the String Date e.g. 'Monday the 14th of May' which will be useful for Alexa.
-        Elements schedule = scheduleWebPage.select(DISPLAY_SCHEDULE_SELECTOR);
+        MultiMap collectionSchedule = new MultiValueMap();
+        Element table = scheduleWebPage.selectFirst(SCHEDULE_SELECTOR);
 
-        
+        for (Element row : table.select(TABLE_ROW_SELECTOR)){
+            for (Element td: row.select(TABLE_CELL_SELECTOR)){
 
-        System.out.println(scheduleWebPage.select(DISPLAY_SCHEDULE_SELECTOR).toString());
-//        JsonParser parser = new JsonParser();
-//        JsonObject jsonObject = parser.parse(html).getAsJsonObject();
-//        JsonElement htmlItem = jsonObject.get("html");
-//
-//        String htmlPayload = htmlItem.toString();
-//
-//        if (StringUtils.isEmpty(htmlPayload) || StringUtils.isBlank(htmlPayload) || htmlPayload.contains(ADDRESS_NOT_FOUND_TEXT) || !(htmlPayload.contains(SERVICE_PROVIDER_SCHEDULE_URL_PATH))){
-//            throw new PropertyNotFoundException("Failed to correctly identify Bin Collection Schedule.");
-//        }
-//
-//        Integer endpointStartPosition = 8;
-//        Integer endpointTrailingCharacterCount = 3;
-//
-//        Document doc = Jsoup.parse(htmlPayload);
-//        Element link = doc.select("a").first();
-//        String linkHref = link.attr("href");
-//
-//        if (linkHref.length() <= endpointStartPosition){ throw new PropertyNotFoundException("Failed to identify valid endpoint HTML. Received - " + linkHref.toString());};
-//
-//        linkHref =  linkHref.substring(endpointStartPosition, (linkHref.length() - endpointTrailingCharacterCount));
-//
-//        return linkHref;
-        return "";
+
+                String longDate = td.select(PARAGRAPH_ABBR_SELECTOR).first().attr(TITLE_ATRIB_SELECTOR);
+                System.out.println(longDate);
+                Elements items = td.getElementsByTag(LIST_ITEM_SELECTOR);
+                if (items.size() > 0) {
+                    Elements lis = td.select(LIST_LIST_ITEM_SELECTOR);
+                    for (Element li: lis){
+                        collectionSchedule.put(longDate, li.text());
+                    }
+                }
+                else{
+                    collectionSchedule.put(longDate, NO_COLLECTION_TEXT);
+                }
+            }
+        }
+        return new CollectionSchedule();
+        //return collectionSchedule;
     }
 
     public static void main (String args[]){

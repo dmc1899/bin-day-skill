@@ -1,5 +1,6 @@
 package uk.co.service.skill.adapters.dataprovider.web;
 
+import org.apache.commons.collections4.MultiMap;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,6 +31,8 @@ public class SchedulePageParserTest {
 
         String singleScheduleHtml = getResourceContentsAsString("/SingleScheduleFound.html");
         schedulePageParser = new SchedulePageParser(singleScheduleHtml);
+        MultiMap thisMultiMap = schedulePageParser.getCollectionSchedule();
+        System.out.println(thisMultiMap);
 
     }
 
