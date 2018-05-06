@@ -33,8 +33,7 @@ public class GetNextBinCollectionEventForProperty implements GetNextBinCollectio
         catch (PropertyNotFoundException pex)
         {
             pex.printStackTrace();
-            // TODO We will wannt to introduce some intelligence here in potentially finding
-            // a nearby address if an exact match is not found with the given search string.
+            // TODO We will wannt to introduce some intelligence here in potentially finding a nearby address if an exact match is not found with the given search string.
 
         }
 

@@ -63,6 +63,7 @@ public class SchedulePageParser implements LoggingFacade {
     public List<CollectionScheduleEvent> getCollectionSchedule() {
         List<CollectionScheduleEvent> collectionScheduleEvents = new ArrayList<CollectionScheduleEvent>();
 
+        //TODO - Replace the date incrementing process with the use of DateUtil to parse and convert Date in words.
         MultiMap collectionSchedule = new MultiValueMap();
         Date collectionDate  = this.displayStartDate;
 
