@@ -26,7 +26,7 @@ public class SchedulePageParserTest {
     }
 
     @Test
-    public void getScheduleUrl() {
+    public void getCollectionScheduleUrl() throws Exception{
 
         String singleScheduleHtml = getResourceContentsAsString("/SingleScheduleFound.html");
         schedulePageParser = new SchedulePageParser(singleScheduleHtml);

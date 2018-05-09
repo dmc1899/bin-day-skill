@@ -60,13 +60,9 @@ public class SchedulePageParser implements LoggingFacade {
         return this.displayEndDate;
     }
 
-    public List<CollectionScheduleEvent> getCollectionSchedule() {
+    public List<CollectionScheduleEvent> getCollectionSchedule() throws ParseException{
         List<CollectionScheduleEvent> collectionScheduleEvents = new ArrayList<CollectionScheduleEvent>();
-
-        //TODO - Replace the date incrementing process with the use of DateUtil to parse and convert Date in words.
-        MultiMap collectionSchedule = new MultiValueMap();
-        Date collectionDate  = this.displayStartDate;
-
+        
         Element table = scheduleWebPage.selectFirst(SCHEDULE_SELECTOR);
 
         for (Element row : table.select(TABLE_ROW_SELECTOR)){
@@ -78,11 +74,9 @@ public class SchedulePageParser implements LoggingFacade {
                 Elements collectionItems = td.getElementsByTag(LIST_ITEM_SELECTOR);
 
                 collectionScheduleEvent.collectionDateInWords = collectionDateInWords;
-                collectionScheduleEvent.collectionDate = collectionDate;
+                collectionScheduleEvent.collectionDate = DateUtil.parseDateInWordStringToDate(collectionDateInWords);
                 collectionScheduleEvent.collectionItems = getCollectionItems(collectionItems);
                 collectionScheduleEvents.add(collectionScheduleEvent);
-
-                collectionDate = addDays(collectionDate, 1);
             }
         }
         return  collectionScheduleEvents;
