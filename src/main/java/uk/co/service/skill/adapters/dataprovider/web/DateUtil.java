@@ -16,8 +16,8 @@ public class DateUtil {
     private static final String ISO_8601_UTC_DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm'Z'";
     private static final String TIMEZONE = "UTC";
     private static final String DATE_TOKEN_SEPERATOR = " ";
-    private static final Integer DATE_INCLUDES_YEAR = 4;
-    private static final Integer DATE_EXCLUDES_YEAR = 3;
+    private static final Integer DATE_LENGTH_INCLUDING_YEAR = 4;
+    private static final Integer DATE_LENGTH_EXCLUDING_YEAR = 3;
 
     public static String dateToIso8601UtcString(Date date) {
         TimeZone tz = TimeZone.getTimeZone(TIMEZONE);
@@ -44,7 +44,7 @@ public class DateUtil {
         return unformattedDate; //PREFERRED_DATE_FORMAT.format(new Date(unformattedDate));
     }
 
-    public static Date parseStringToDate(String dateInWords) throws Exception{
+    public static Date parseDateInWordStringToDate(String dateInWords) throws ParseException{
 
         String dayOfMonth = null;
         String dateOfMonth = null;
@@ -54,12 +54,15 @@ public class DateUtil {
 
         dateTokenList = removeUnimportantWords(dateTokenList);
 
-        if (dateTokenList.size()== DATE_INCLUDES_YEAR){
+        if (dateTokenList.size() < DATE_LENGTH_EXCLUDING_YEAR){
+            throw new ParseException("Expecting at least a space-separate Day and Month in date. ",0);
+        }
+
+        if (dateTokenList.size()== DATE_LENGTH_INCLUDING_YEAR){
             year = Integer.parseInt(dateTokenList.get(3));
         }
 
         monthName = dateTokenList.get(2);
-
         dayOfMonth = StringUtils.removeAll(dateTokenList.get(1), "[a-z]|[A-Z]");
 
         String parsedDate = StringUtils.join( year.toString(), "-",monthName,"-", dayOfMonth);
@@ -92,7 +95,7 @@ public class DateUtil {
             // Monday the 7th of May
             // Monday the 7th May
             // Monday 7th May
-            Date thisdate = parseStringToDate("Monday the 7th May 2019");
+            Date thisdate = parseDateInWordStringToDate("Monday the 7th May 2019");
             System.out.println(thisdate);
         } catch (Exception e) {
             e.printStackTrace();
